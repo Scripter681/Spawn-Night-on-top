@@ -1,0 +1,76 @@
+-- Custom night-themed loader first
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local screenGui = Instance.new("ScreenGui", Players.LocalPlayer:WaitForChild("PlayerGui"))
+screenGui.Name = "CustomLoadingUI"
+screenGui.ResetOnSpawn = false
+
+local container = Instance.new("Frame", screenGui)
+container.AnchorPoint = Vector2.new(0.5, 0.5)
+container.Position = UDim2.new(0.5, 0, 0.5, 0)
+container.Size = UDim2.new(0, 350, 0, 120)
+container.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
+container.BorderSizePixel = 0
+container.Name = "LoadingBox"
+container.ClipsDescendants = true
+
+local uicorner = Instance.new("UICorner", container)
+uicorner.CornerRadius = UDim.new(0, 12)
+
+local title = Instance.new("TextLabel", container)
+title.Text = "NIGHT ON TOP"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.TextColor3 = Color3.fromRGB(200, 200, 255)
+title.BackgroundTransparency = 1
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 5)
+
+local barBackground = Instance.new("Frame", container)
+barBackground.AnchorPoint = Vector2.new(0.5, 0.5)
+barBackground.Position = UDim2.new(0.5, 0, 0.55, 0)
+barBackground.Size = UDim2.new(0.9, 0, 0, 14)
+barBackground.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+barBackground.BorderSizePixel = 0
+
+local barCorner = Instance.new("UICorner", barBackground)
+barCorner.CornerRadius = UDim.new(0, 6)
+
+local loadingBar = Instance.new("Frame", barBackground)
+loadingBar.Size = UDim2.new(0, 0, 1, 0)
+loadingBar.BackgroundColor3 = Color3.fromRGB(170, 0, 255)
+loadingBar.BorderSizePixel = 0
+
+local barFillCorner = Instance.new("UICorner", loadingBar)
+barFillCorner.CornerRadius = UDim.new(0, 6)
+
+local bottomText = Instance.new("TextLabel", container)
+bottomText.Text = "loading"
+bottomText.Font = Enum.Font.Gotham
+bottomText.TextSize = 18
+bottomText.TextColor3 = Color3.fromRGB(170, 170, 220)
+bottomText.BackgroundTransparency = 1
+bottomText.Size = UDim2.new(1, 0, 0, 30)
+bottomText.Position = UDim2.new(0, 0, 1, -30)
+
+-- Tween the loading bar
+local tweenInfo = TweenInfo.new(3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local goal = { Size = UDim2.new(1, 0, 1, 0) }
+local tween = TweenService:Create(loadingBar, tweenInfo, goal)
+
+-- On complete: fade and then load the external script
+tween.Completed:Connect(function()
+	wait(0.5)
+	local fadeTween = TweenService:Create(container, TweenInfo.new(1), {BackgroundTransparency = 1})
+	fadeTween:Play()
+	fadeTween.Completed:Connect(function()
+		screenGui:Destroy()
+		
+		-- Load the external script AFTER loading UI
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/Scripter681/Spawn-Night-on-top/refs/heads/main/Night%20on%20top"))()
+	end)
+end)
+
+-- Start the animation
+tween:Play()
